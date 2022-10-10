@@ -143,8 +143,8 @@ jobs:
           name: Front-end scan
           command: |
             cd frontend
-            npm audit fix
             npm audit --audit-level=critical
+            npm audit fix
 
   scan-backend:
     executor: node
@@ -158,8 +158,8 @@ jobs:
           name: Back-end scan
           command: |
             cd backend
-            npm audit fix
             npm audit --audit-level=critical
+            npm audit fix
 
   # deploy-infrastructure:
   #   docker:
