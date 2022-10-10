@@ -107,10 +107,10 @@ jobs:
     executor: node
     steps:
       - checkout
-      - restore_cache:
-          keys: [test-frontend]
       - attach_workspace:
           at: .
+      - restore_cache:
+          keys: [test-frontend]
       - run:
           name: Front-end test
           command: |
@@ -140,11 +140,15 @@ jobs:
       - restore_cache:
           keys: [scan-frontend]
       - run:
+          name: Front-end audit
+          command: |
+            cd frontend
+            npm audit fix
+      - run:
           name: Front-end scan
           command: |
             cd frontend
             npm audit --audit-level=critical
-            npm audit fix
 
   scan-backend:
     executor: node
@@ -154,6 +158,11 @@ jobs:
           at: .
       - restore_cache:
           keys: [scan-backend]
+      - run:
+          name: Back-end audit
+          command: |
+            cd backend
+            npm audit fix
       - run:
           name: Back-end scan
           command: |
