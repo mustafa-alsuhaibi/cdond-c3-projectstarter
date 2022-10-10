@@ -33,6 +33,33 @@ version: 2.1
 #             fi
             
 jobs:
+  npm-backend:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: npm install
+          working_directory: ./backend
+          command: npm install
+      - persist_to_workspace:
+          root: .
+          paths:
+            - backend/node_modules
+
+
+  npm-frontend:
+   executor: node
+   steps:
+      - checkout
+      - run:
+          name: npm install
+          working_directory: ./frontend
+          command: npm install
+      - persist_to_workspace:
+          root: .
+          paths:
+            - frontend/node_modules
+
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -44,7 +71,6 @@ jobs:
           name: Build front-end
           command: |
             cd frontend
-            npm install
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
@@ -61,7 +87,6 @@ jobs:
           name: Back-end build
           command: |
             cd backend
-            npm install
             npm run build
       - save_cache:
           paths: [backend/node_modules]
@@ -78,7 +103,6 @@ jobs:
           name: Front-end test
           command: |
             cd frontend
-            npm install
             npm run test
                 
   test-backend:
@@ -92,7 +116,6 @@ jobs:
           name: Backend-end test
           command: |
             cd backend
-            npm install
             npm run test
             
   scan-frontend:
@@ -106,7 +129,6 @@ jobs:
           name: Front-end scan
           command: |
             cd frontend
-            npm install
             npm audit --audit-level=critical
 
   scan-backend:
@@ -120,7 +142,6 @@ jobs:
           name: Back-end scan
           command: |
             cd backend
-            npm install
             npm audit --audit-level=critical
 
   # deploy-infrastructure:
@@ -292,16 +313,24 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
+      - npm-frontend
+      - npm-backend
+      
+      - build-frontend:
+          requires: [npm-frontend]  
+      - build-backend:
+          requires: [npm-backend]  
+
       - test-frontend:
           requires: [build-frontend]
       - test-backend:
           requires: [build-backend]
+
       - scan-backend:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
+
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       #     filters:
