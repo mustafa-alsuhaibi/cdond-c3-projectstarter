@@ -4,7 +4,7 @@ executors:
   node:
     docker:
       - image: circleci/node:13.8.0
-      
+
 # commands:
 #   destroy-environment:
 #     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -66,8 +66,7 @@ jobs:
             - frontend/node_modules
 
   build-frontend:
-    docker:
-      - image: circleci/node:13.8.0
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -80,10 +79,13 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - frontend/dist
 
   build-backend:
-    docker:
-      - image: circleci/node:13.8.0
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -96,10 +98,13 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - backend/dist
 
   test-frontend:
-    docker:
-      - image: circleci/node:13.8.0
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -111,8 +116,7 @@ jobs:
             npm run test
                 
   test-backend:
-    docker:
-      - image: circleci/node:13.8.0
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -124,8 +128,7 @@ jobs:
             npm run test
             
   scan-frontend:
-    docker:
-      - image: circleci/node:13.8.0
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -137,8 +140,7 @@ jobs:
             npm audit --audit-level=critical
 
   scan-backend:
-    docker:
-      - image: circleci/node:13.8.0
+    executor: node
     steps:
       - checkout
       - restore_cache:
