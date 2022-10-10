@@ -149,6 +149,7 @@ jobs:
           name: On frontend npm-audit fail
           command: |
             cd frontend
+            npm install
             npm audit fix --force
           when: on_fail
 
@@ -170,6 +171,7 @@ jobs:
           name: On backend npm-audit fail
           command: |
             cd backend
+            npm install
             npm audit fix --force
           when: on_fail
 
