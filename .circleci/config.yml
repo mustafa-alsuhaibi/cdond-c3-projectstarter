@@ -109,6 +109,8 @@ jobs:
       - checkout
       - restore_cache:
           keys: [test-frontend]
+      - attach_workspace:
+          at: .
       - run:
           name: Front-end test
           command: |
@@ -119,6 +121,8 @@ jobs:
     executor: node
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - restore_cache:
           keys: [test-backend]
       - run:
@@ -131,6 +135,8 @@ jobs:
     executor: node
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - restore_cache:
           keys: [scan-frontend]
       - run:
@@ -143,6 +149,8 @@ jobs:
     executor: node
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - restore_cache:
           keys: [scan-backend]
       - run:
