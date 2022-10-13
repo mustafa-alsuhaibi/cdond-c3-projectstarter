@@ -1,9 +1,14 @@
 version: 2.1
+orbs:
+  slack: circleci/slack@4.10.1
 
 executors:
   node:
     docker:
       - image: circleci/node:13.8.0
+  aws:
+    docker:
+      - image: amazon/aws-cli
 
 # commands:
 #   destroy-environment:
@@ -38,6 +43,28 @@ executors:
 #             fi
             
 jobs:
+  notify-slack:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*This is a text notification*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: always
+
   npm-backend:
     executor: node
     steps:
@@ -50,7 +77,6 @@ jobs:
           root: .
           paths:
             - backend/node_modules
-
 
   npm-frontend:
    executor: node
@@ -158,10 +184,9 @@ jobs:
             npm audit --audit-level=critical
 
   # deploy-infrastructure:
-  #   docker:
-  #     # Docker image here that supports AWS CLI
+  #   executor: aws
   #   steps:
-  #     # Checkout code from git
+  #     - checkout
   #     - run:
   #         name: Ensure back-end infrastructure exists
   #         command: |
@@ -189,7 +214,7 @@ jobs:
   #         root: ~/
   #         paths:
   #           - project/.circleci/ansible/inventory.txt
-  #     # Here's where you will add some code to rollback on failure      
+      # Here's where you will add some code to rollback on failure      
 
   # configure-infrastructure:
   #   docker:
@@ -326,6 +351,9 @@ jobs:
 workflows:
   default:
     jobs:
+      - notify-slack:
+          context: slack-secrets
+
       - npm-frontend
       - npm-backend
       
