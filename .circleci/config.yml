@@ -146,12 +146,6 @@ jobs:
             npm install oauth-sign@^0.9.0
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-      - run:
-          name: On frontend npm-audit fail
-          command: |
-            cd frontend
-            npm audit fix --force
-          when: on_fail
 
   scan-backend:
     executor: node
@@ -167,12 +161,7 @@ jobs:
             cd backend
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-      - run:
-          name: On backend npm-audit fail
-          command: |
-            cd backend
-            npm audit fix --force
-          when: on_fail
+            npm audit --audit-level=critical
 
   # deploy-infrastructure:
   #   docker:
