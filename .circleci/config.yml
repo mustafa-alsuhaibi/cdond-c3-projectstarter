@@ -1,6 +1,4 @@
 version: 2.1
-orbs:
-  slack: circleci/slack@4.10.1
 
 executors:
   node:
@@ -351,9 +349,6 @@ jobs:
 workflows:
   default:
     jobs:
-      - notify-slack:
-          context: slack-secrets
-
       - npm-frontend
       - npm-backend
       
