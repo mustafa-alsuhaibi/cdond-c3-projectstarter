@@ -146,12 +146,16 @@ jobs:
       - attach_workspace:
           at: .
       - run:
+          name: npm audit fix
+          working_directory: ./backend   
+          command: |
+            npm audit fix --force     
+      - run:
           name: Back-end scan
           working_directory: ./backend
           command: |
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-            npm audit fix --force
 
   # deploy-infrastructure:
   #   docker:
