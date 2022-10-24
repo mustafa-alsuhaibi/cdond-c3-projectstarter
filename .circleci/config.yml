@@ -7,6 +7,9 @@ executors:
   aws:
     docker:
       - image: amazon/aws-cli
+  python:
+    docker:
+      - image: python:3.9.0-alpine
 
 commands:
   destroy-environment:
@@ -19,6 +22,11 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+      # - run:
+      #     name: Delete S3 - frontend
+      #     when: on_fail
+      #     command: |
+      #       aws s3 rb s3://WebsiteBucket --force  
       - run:
           name: Destroy environments - backend
           when: on_fail
@@ -45,28 +53,6 @@ commands:
 #             fi
             
 jobs:
-  notify-slack:
-    docker:
-      - image: 'cimg/base:stable'
-    steps:
-      - slack/notify:
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "plain_text",
-                      "text": "*This is a text notification*",
-                      "emoji": true
-                    }
-                  ]
-                }
-              ]
-            }
-          event: always
-
   npm-backend:
     executor: node
     steps:
@@ -223,41 +209,48 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment  
 
-  # configure-infrastructure:
-  #   docker:
-  #     # Docker image here that supports Ansible
-  #   steps:
-  #     # Checkout code from git
-  #     # Add ssh keys with fingerprint
-  #     # attach workspace
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     - run:
-  #         name: Configure server
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     # Here's where you will add some code to rollback on failure      
+  configure-infrastructure:
+    executor: python
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["01:f3:66:03:06:82:06:6a:af:65:cb:71:d9:c5:b7:70"]
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install dependencies
+          working_directory: ./.circleci/ansible
+          command: |
+            apk add --update ansible
+            ansible --version
+      - run:
+          name: Configure server
+          working_directory: ./.circleci/ansible
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
+      - destroy-environment  
 
   # run-migrations:
-  #   docker:
-  #     # Docker image here that supports NodeJS
+  #   executor: node
   #   steps:
-  #     # Checkout code from git
+  #     - checkout
+  #     - attach_workspace:
+  #         at: .
   #     - run:
   #         name: Run migrations
+  #         working_directory: ./backend
   #         command: |
-  #           # Your code here
-  #           exit 1
+  #           npm run migrations > migrations_dump.txt
   #     - run:
   #         name: Send migration results to memstash
+  #         working_directory: ./backend
   #         command: |
-  #           # Your code here
-  #           exit 1
-  #    # Here's where you will add some code to rollback on failure      
+  #           if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+  #           then
+  #               curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+  #           fi
+  #     - revert-migrations     
 
   # deploy-frontend:
   #   docker:
@@ -381,8 +374,9 @@ workflows:
           filters:
             branches:
               only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
