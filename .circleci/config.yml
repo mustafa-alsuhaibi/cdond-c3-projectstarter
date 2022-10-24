@@ -221,7 +221,7 @@ jobs:
           name: Install dependencies
           working_directory: ./.circleci/ansible
           command: |
-            yum install -y tar gzip
+            #yum install -y tar gzip
             apk add --update ansible
             ansible --version
       - run:
