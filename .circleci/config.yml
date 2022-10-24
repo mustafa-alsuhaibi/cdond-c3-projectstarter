@@ -227,7 +227,6 @@ jobs:
           name: Configure server
           working_directory: ./.circleci/ansible
           command: |
-            cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment  
 
