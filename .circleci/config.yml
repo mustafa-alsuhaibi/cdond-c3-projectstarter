@@ -260,7 +260,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo ./aws/install
+            npm install -g aws-cli
             yum -y install nodejs
             yum -y install tar gzip
             apk add --update ansible
