@@ -10,6 +10,9 @@ executors:
   python:
     docker:
       - image: python:3.9.0-alpine
+  cimg:
+    docker:
+      - image: cimg/base:stable
 
 commands:
   destroy-environment:
@@ -56,7 +59,6 @@ commands:
       - run:
           name: Install AWS CLI
           command: |
-            sudo apt-get install curl
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install  
@@ -324,7 +326,7 @@ jobs:
       - revert-migrations        
                     
   deploy-backend:
-    executor: python
+    executor: cimg
     steps:
       - checkout
       - install-awscli
@@ -337,9 +339,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible curl rsync openssh nodejs npm
-            yum -y install nodejs
-            yum -y install tar gzip
+            cd backend
+            npm install
       - run:
           name: Package backend
           command: |
@@ -359,10 +360,10 @@ jobs:
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - persist_to_workspace:
-          root: .
-          paths:
-            - backend/dist
+      # - persist_to_workspace:
+      #     root: .
+      #     paths:
+      #       - backend/dist
       - destroy-environment  
       - revert-migrations      
 
