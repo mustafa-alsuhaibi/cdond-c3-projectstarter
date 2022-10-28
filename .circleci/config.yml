@@ -48,9 +48,38 @@ commands:
             then
               cd ~/project/backend
               npm run migrations:revert
-              exit 1
             fi
-            
+
+  install-awscli:
+    description: Install AWS CLI
+    steps:
+      - run:
+          name: Install AWS CLI
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install   
+
+  install-ansible:
+    description: Install ansible
+    steps:
+      - run:
+          name: Install ansible
+          command: |
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y      
+
+  install-nodejs:
+    description: Install nodejs
+    steps:
+      - run:
+          name: Install nodejs
+          command: |
+            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+            sudo opt install -y nodejs
+
 jobs:
   npm-backend:
     executor: node
@@ -233,6 +262,7 @@ jobs:
     executor: node
     steps:
       - checkout
+      - install-awscli
       - attach_workspace:
           at: .
       - run:
@@ -255,29 +285,32 @@ jobs:
     executor: node
     steps:
       - checkout
+      - install-awscli
+      - install-nodejs
       - attach_workspace:
           at: .
       - run:
           name: Install dependencies
           command: |
-            npm install aws-sdk
-            yum -y install nodejs
-            yum -y install tar gzip
-            apk add --update ansible
-            ansible --version
+            cd frontend
+            npm install
+            # yum -y install tar gzip
+            # apk add --update ansible
+            # ansible --version
       - run:
           name: Get backend url
           command: |
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "API_URL = ${API_URL}"
+            BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --output text)
+
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
-            echo "${API_URL}"
       - run:
           name: Deploy frontend objects
           command: |
             cd frontend
-            npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
@@ -292,6 +325,9 @@ jobs:
     executor: python
     steps:
       - checkout
+      - install-awscli
+      - install-ansible
+      - install-nodejs
       - add_ssh_keys:
           fingerprints: ["01:f3:66:03:06:82:06:6a:af:65:cb:71:d9:c5:b7:70"]
       - attach_workspace:
@@ -303,15 +339,22 @@ jobs:
             yum -y install nodejs
             yum -y install tar gzip
       - run:
-          name: Deploy backend
+          name: Package backend
           command: |
             cd backend
-            npm i
-            npm run build
+            npm rum build
+            tar -czf artifact.tar.gz dist/* package*
+
             cd ..
-            tar -C backend -czvf artifact.tar.gz .
+            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+      - run:
+          name: Deploy backend
+          command: |
+            export TYPEORM_MIGRATIONS_DIR=./migrations
+            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+            export TYPEORM_MIGRATIONS=./migrations/*.ts
+
             cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       - persist_to_workspace:
