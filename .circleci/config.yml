@@ -9,10 +9,10 @@ executors:
       - image: amazon/aws-cli
   python:
     docker:
-      - image: cimg/python:3.10
-  # cimg:
-  #   docker:
-  #     - image: cimg/base:stable
+      - image: python:3.9.0-alpine
+  cimg:
+    docker:
+      - image: cimg/base:stable
 
 commands:
   destroy-environment:
@@ -326,7 +326,7 @@ jobs:
       - revert-migrations        
                     
   deploy-backend:
-    executor: python
+    executor: cimg
     steps:
       - checkout
       - install-awscli
