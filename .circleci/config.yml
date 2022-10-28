@@ -58,7 +58,7 @@ commands:
           command: |
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
-            sudo ./aws/install   
+            sudo ./aws/install  
 
   install-ansible:
     description: Install ansible
@@ -77,8 +77,8 @@ commands:
       - run:
           name: Install nodejs
           command: |
-            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-            sudo opt install -y nodejs
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt install -y nodejs
 
 jobs:
   npm-backend:
@@ -326,8 +326,8 @@ jobs:
     steps:
       - checkout
       - install-awscli
-      - install-ansible
       - install-nodejs
+      - install-ansible
       - add_ssh_keys:
           fingerprints: ["01:f3:66:03:06:82:06:6a:af:65:cb:71:d9:c5:b7:70"]
       - attach_workspace:
