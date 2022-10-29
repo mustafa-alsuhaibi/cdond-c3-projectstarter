@@ -232,7 +232,7 @@ jobs:
           command: |
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --filter "Name=tag:project, Values=udapeople" \
               --output text >> inventory
             cat inventory
       - persist_to_workspace:
@@ -306,7 +306,7 @@ jobs:
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --filter "Name=tag:project, Values=udapeople" \
               --output text)
 
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
@@ -379,7 +379,7 @@ jobs:
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --filter "Name=tag:project, Values=udapeople" \
               --output text)
       - run:
           name: Backend smoke test.
