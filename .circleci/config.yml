@@ -233,13 +233,6 @@ jobs:
               --filter "Name=tag:project, Values=udapeople" \
               --output text >> inventory.txt
             cat inventory.txt
-
-            # BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
-            #   --filters "Name=tag:Name,Values=udapeople" \
-            #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            #   --output text)
-            # echo $BACKEND_PUBLIC_IP >> .circleci/ansible/inventory.txt
-            # cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
@@ -340,7 +333,7 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["01:f3:66:03:06:82:06:6a:af:65:cb:71:d9:c5:b7:70"]
       - attach_workspace:
-          at: .
+          at: ~/
       - run:
           name: Install dependencies
           command: |
