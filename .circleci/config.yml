@@ -17,14 +17,12 @@ executors:
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-    # parameters:
-      # Add parameter here   
     steps:
       - run:
           name: Delete S3 - frontend
           when: on_fail
           command: |
-            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force --recursive
       - run:
           name: Destroy environments - frontend
           when: on_fail
@@ -233,7 +231,7 @@ jobs:
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filter "Name=tag:project, Values=udapeople" \
-              --output text >> inventory
+              --output text >> inventory.text
             cat inventory
       - persist_to_workspace:
           root: ~/

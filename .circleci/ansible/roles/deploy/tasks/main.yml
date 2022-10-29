@@ -33,50 +33,77 @@
 
 ########
 
-- name: "update apt packages"
-  become: true
-  become_method: sudo
-  apt:
-    update_cache: yes
+# - name: "update apt packages"
+#   become: true
+#   become_method: sudo
+#   apt:
+#     update_cache: yes
 
-- name: "Remove dependencies that are no longer required"
-  become: true
-  apt:
-    autoremove: yes
+# - name: "Remove dependencies that are no longer required"
+#   become: true
+#   apt:
+#     autoremove: yes
 
-- name: "upgrade packages."
-  become: true
-  apt:
-    upgrade: "yes"
+# - name: "upgrade packages."
+#   become: true
+#   apt:
+#     upgrade: "yes"
 
-- name: create backend directory
-  become: true
+# - name: create backend directory
+#   become: true
+#   file:
+#     path: /home/ubuntu/backend
+#     state: directory
+#     mode: 0755
+
+# - name: copy backend files
+#   become: true
+#   copy:
+#     src: artifact.tar.gz
+#     dest: /home/ubuntu/backend
+
+# - name: "Unarchive the copied tar file"
+#   become: true
+#   unarchive:
+#     src: artifact.tar.gz
+#     dest: /home/ubuntu/backend
+
+# - name: "install dependencies."
+#   become: true
+#   apt:
+#     name: ["nodejs", "npm"]
+#     state: latest
+#     update_cache: yes
+
+# - name: "Run pm2"
+#   become: true
+#   shell:
+#     cmd: "pm2 stop default || pm2 start npm -- start"
+#     chdir: /home/ubuntu/backend/
+
+####################
+
+- name: "Create directory"
   file:
     path: /home/ubuntu/backend
     state: directory
-    mode: 0755
 
-- name: copy backend files
-  become: true
+- name: "Copy files"
   copy:
     src: artifact.tar.gz
-    dest: /home/ubuntu/backend
+    dest: /home/ubuntu/backend/artifact.tar.gz
+    backup: yes
 
-- name: "Unarchive the copied tar file"
-  become: true
-  unarchive:
-    src: artifact.tar.gz
-    dest: /home/ubuntu/backend
-
-- name: "install dependencies."
-  become: true
-  apt:
-    name: ["nodejs", "npm"]
-    state: latest
-    update_cache: yes
-
-- name: "Run pm2"
-  become: true
-  shell:
-    cmd: "pm2 stop default || pm2 start npm -- start"
-    chdir: /home/ubuntu/backend/
+- name: "Uncompress files"
+  shell: |
+    cd /home/ubuntu/backend
+    tar xvzf artifact.tar.gz -C .
+    ls -la
+- name: "Start Application"
+  become: yes
+  shell: |
+    npm install
+    pm2 stop default
+    pm2 start npm -- start
+  args:
+    chdir: /home/ubuntu/backend
