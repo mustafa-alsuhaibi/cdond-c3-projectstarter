@@ -240,7 +240,10 @@ jobs:
       - destroy-environment  
 
   configure-infrastructure:
-    executor: python
+    # executor: python
+    docker:
+    - image: amazon/aws-cli
+    - image: python:3.9.0-alpine
     steps:
       - checkout
       - install-nodejs
