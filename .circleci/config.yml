@@ -243,6 +243,7 @@ jobs:
     executor: python
     steps:
       - checkout
+      - install-awscli
       - add_ssh_keys:
           fingerprints: ["01:f3:66:03:06:82:06:6a:af:65:cb:71:d9:c5:b7:70"]
       - attach_workspace:
@@ -475,8 +476,8 @@ workflows:
       - deploy-backend:
           requires: [run-migrations]
       
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
           
       # - cloudfront-update:
       #     requires: [smoke-test]
