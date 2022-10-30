@@ -243,6 +243,7 @@ jobs:
     executor: python
     steps:
       - checkout
+      - install-nodejs
       - install-awscli
       - add_ssh_keys:
           fingerprints: ["01:f3:66:03:06:82:06:6a:af:65:cb:71:d9:c5:b7:70"]
