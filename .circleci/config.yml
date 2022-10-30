@@ -9,7 +9,7 @@ executors:
       - image: amazon/aws-cli
   python:
     docker:
-      - image: cimg/python:3.10
+      - image: python:3.9.0-alpine
   cimg:
     docker:
       - image: cimg/base:stable
