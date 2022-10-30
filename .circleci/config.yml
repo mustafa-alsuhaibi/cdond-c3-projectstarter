@@ -240,7 +240,9 @@ jobs:
       - destroy-environment  
 
   configure-infrastructure:
-    executor: python
+    # executor: python
+    docker:
+    - image: cimg/python:3.10
     steps:
       - checkout
       - install-awscli
