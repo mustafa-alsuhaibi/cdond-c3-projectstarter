@@ -240,14 +240,16 @@ jobs:
       - destroy-environment  
 
   configure-infrastructure:
-    # executor: python
-    docker:
-    - image: amazon/aws-cli
-    - image: python:3.9.0-alpine
+    executor: 
+      -python
+      -aws
+    # docker:
+    # - image: python:3.9.0-alpine
+    # - image: amazon/aws-cli
     steps:
       - checkout
-      - install-nodejs
-      - install-awscli
+      # - install-nodejs
+      # - install-awscli
       - add_ssh_keys:
           fingerprints: ["01:f3:66:03:06:82:06:6a:af:65:cb:71:d9:c5:b7:70"]
       - attach_workspace:
