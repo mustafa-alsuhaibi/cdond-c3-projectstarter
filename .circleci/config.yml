@@ -372,10 +372,6 @@ jobs:
       - install-awscli
       - install-nodejs
       - run:
-          name: Install dependencies
-          command: |
-            # your code here
-      - run:
           name: Backend smoke test.
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances \
