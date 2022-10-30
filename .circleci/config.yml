@@ -252,12 +252,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Install dependencies
-          working_directory: ./.circleci/ansible
-          command: |
-            apk add --update ansible
-            ansible --version
-      - run:
           name: Configure server
           working_directory: ./.circleci/ansible
           command: |
