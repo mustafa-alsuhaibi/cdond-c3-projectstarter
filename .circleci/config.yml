@@ -411,7 +411,6 @@ jobs:
     executor: aws
     steps:
       - checkout
-      - install-awscli
       - install-nodejs
       - run:
           name: Update cloudfront distribution
