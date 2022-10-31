@@ -411,8 +411,6 @@ jobs:
     executor: aws
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/
       - run:
           name: Update cloudfront distribution
           command: |
