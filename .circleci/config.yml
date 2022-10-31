@@ -404,9 +404,8 @@ jobs:
               echo "Frontend smoke test failed"
               exit 1
             fi
-
-      # - destroy-environment  
-      # - revert-migrations     
+      - destroy-environment  
+      - revert-migrations     
 
   # cloudfront-update:
   #   docker:
