@@ -424,7 +424,7 @@ jobs:
       - destroy-environment  
       - revert-migrations  
 
-cleanup:
+  cleanup:
     executor: aws
     steps:
       - checkout
