@@ -244,7 +244,6 @@ jobs:
       - destroy-environment  
 
   configure-infrastructure:
-    # executor: python
     docker:
     - image: cimg/python:3.10
     steps:
@@ -426,21 +425,23 @@ jobs:
     executor: aws
     steps:
       - checkout
+      - install-nodejs
       - run:
           name: Remove old stacks and files
           command: |
-            OldWorkflowID=$(curl -H "token: 1513db3b-15be-4750-bae6-3a8d32dd6de2" --request GET https://api.memstash.io/values/WorkflowID)
-            CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
+            cat ~/OldWorkflowID.txt
+            OldWorkflowID=$(cat ~/OldWorkflowID.txt)
+            
+            echo OldWorkflowID: "${OldWorkflowID}"
 
-            if [[ "$CurrentWorkflowID" != "$OldWorkflowID" ]]
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "$OldWorkflowID" ]]
             then
-              echo "$OldWorkflowID!=$CurrentWorkflowID => will delete old version"
-
+              echo "--------- Delete Confirmed ---------"
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
             else
-              echo "$OldWorkflowID==$CurrentWorkflowID => nothing needs to be done..."
+              echo "--------- Cannot Cleanup ---------"
             fi
             
 workflows:
