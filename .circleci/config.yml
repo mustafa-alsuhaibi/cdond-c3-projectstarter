@@ -444,9 +444,9 @@ jobs:
                     --no-paginate --output text)
 
             echo OldWorkflowID: "${OldWorkflowID}"
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+            echo NewWorkflowID: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-            #if [[ udapeople-"${CIRCLE_WORKFLOW_ID:0:7}" != "$OldWorkflowID" ]]
+            if [[ "udapeople-${CIRCLE_WORKFLOW_ID:0:7}" != "$OldWorkflowID" ]]
             then
               echo "--------- Delete Confirmed ---------"
               
