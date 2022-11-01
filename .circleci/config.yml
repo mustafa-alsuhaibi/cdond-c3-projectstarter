@@ -430,6 +430,14 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
+            # Fetch Stacks
+            export STACKS=($(aws cloudformation list-stacks \
+                    --query "StackSummaries[*].StackName" \
+                    --stack-status-filter CREATE_COMPLETE
+                    --no-paginate --output text --no-paginate --output text))
+
+            echo Stack Names: "${STACKS[@]}"
+
             # Fetch the Old workflow ID
             export OldWorkflowID=$(aws cloudformation \
                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
@@ -448,10 +456,8 @@ jobs:
             else
               echo "--------- Cannot Cleanup ---------"
             fi
-      - destroy-environment  
-      - revert-migrations  
 
-      
+
 workflows:
   default:
     jobs:
