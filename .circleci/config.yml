@@ -425,7 +425,6 @@ jobs:
     executor: aws
     steps:
       - checkout
-      - install-nodejs
       - run:
           name: Remove old stacks and files
           command: |
