@@ -422,9 +422,11 @@ jobs:
       - revert-migrations  
 
   cleanup:
-    executor: aws
+    executor: cimg
     steps:
       - checkout
+      - install-awscli
+      - install-nodejs
       - run:
           name: Remove old stacks and files
           command: |
@@ -446,7 +448,10 @@ jobs:
             else
               echo "--------- Cannot Cleanup ---------"
             fi
-        
+      - destroy-environment  
+      - revert-migrations  
+
+      
 workflows:
   default:
     jobs:
