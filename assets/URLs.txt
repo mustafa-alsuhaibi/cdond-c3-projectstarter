@@ -1,0 +1,5 @@
+URL01 - my github:
+https://github.com/mustafa-alsuhaibi/cdond-c3-projectstarter
+
+URL02 - public URL for your S3 Bucket:
+http://udapeople-06aa7aa.s3.amazonaws.com/index.html#/employees
