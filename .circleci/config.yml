@@ -118,7 +118,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: .
+          at: ~/
       - run:
           name: Build front-end
           command: |
@@ -134,7 +134,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: .
+          at: ~/
       - run:
           name: Back-end build
           command: |
