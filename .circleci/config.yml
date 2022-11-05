@@ -406,6 +406,7 @@ jobs:
     executor: aws
     steps:
       - checkout
+      - install-nodejs
       - run:
           name: Update cloudfront distribution
           command: |
