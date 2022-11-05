@@ -406,7 +406,12 @@ jobs:
     executor: aws
     steps:
       - checkout
-      - install-nodejs
+      - run: 
+          name: Install Dependencies
+          command: |
+            yum install -y tar gzip 
+            curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+            yum install -y nodejs
       - run:
           name: Update cloudfront distribution
           command: |
