@@ -87,31 +87,31 @@ commands:
             sudo apt install -y nodejs
 
 jobs:
-  # npm-backend:
-  #   executor: node
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: npm install
-  #         working_directory: ./backend
-  #         command: npm install
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - backend/node_modules
+  npm-backend:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: npm install
+          working_directory: ./backend
+          command: npm install
+      - persist_to_workspace:
+          root: .
+          paths:
+            - backend/node_modules
 
-  # npm-frontend:
-  #  executor: node
-  #  steps:
-  #     - checkout
-  #     - run:
-  #         name: npm install
-  #         working_directory: ./frontend
-  #         command: npm install
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - frontend/node_modules
+  npm-frontend:
+   executor: node
+   steps:
+      - checkout
+      - run:
+          name: npm install
+          working_directory: ./frontend
+          command: npm install
+      - persist_to_workspace:
+          root: .
+          paths:
+            - frontend/node_modules
 
   build-frontend:
     executor: node
@@ -123,7 +123,6 @@ jobs:
           name: Build front-end
           command: |
             cd frontend
-            npm install
             npm run build
       - persist_to_workspace:
           root: .
@@ -140,7 +139,6 @@ jobs:
           name: Back-end build
           command: |
             cd backend
-            npm install
             npm run build
       - persist_to_workspace:
           root: .
@@ -463,13 +461,13 @@ jobs:
 workflows:
   default:
     jobs:
-      # - npm-frontend
-      # - npm-backend
+      - npm-frontend
+      - npm-backend
       
       - build-frontend
-          # requires: [npm-frontend]  
+          requires: [npm-frontend]  
       - build-backend
-          # requires: [npm-backend]  
+          requires: [npm-backend]  
 
       - test-frontend:
           requires: [build-frontend]
