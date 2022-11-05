@@ -176,16 +176,11 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: install oauth-sign
-          working_directory: ./frontend
-          command: |
-            npm install oauth-sign@^0.9.0
-      - run:
           name: Front-end scan
           working_directory: ./frontend
           command: |
+            npm install
             npm audit fix --audit-level=critical --force
-            npm audit --audit-level=critical
 
   scan-backend:
     executor: node
@@ -197,6 +192,7 @@ jobs:
           name: npm audit fix
           working_directory: ./backend   
           command: |
+            npm install
             npm audit fix --force     
       - run:
           name: Back-end scan
