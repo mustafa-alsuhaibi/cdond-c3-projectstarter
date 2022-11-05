@@ -464,9 +464,9 @@ workflows:
       - npm-frontend
       - npm-backend
       
-      - build-frontend
+      - build-frontend:
           requires: [npm-frontend]  
-      - build-backend
+      - build-backend:
           requires: [npm-backend]  
 
       - test-frontend:
